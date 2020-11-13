@@ -21,8 +21,28 @@ typedef struct virtual_memory {
     }data_t;
 }virtual_memory_t;
 
-void test() {
+typredef struct entity {
+    /* interface for using our heap */
     
+    u8* ptr;
+    u16 size;
+}entity_t;
+
+entity_t LIST[40]; // with all of entities in the LIST
+                    // we will be take access to the heap
+
+void* my_own_malloc(size_t size) {
+    assert(size <= HEAP_SIZE); // max memory for object
+                                // what can give custom allocator
+    size += HEADER;
+}
+
+void my_own_free(void* ptr) {
+    
+}
+
+void test() {
+    int* test_variable = my_own_malloc(sizeof(int)); // test variable
 }
 
 int main(int argc, char** argv) {
