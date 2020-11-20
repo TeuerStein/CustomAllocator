@@ -9,6 +9,8 @@
 #define HEAP_SIZE STACK_SIZE * 4
 #define HEADER 4
 
+static u16 IN_USE;
+
 typedef struct virtual_memory {
     u8 stack[STACK_SIZE];
     char** unmapped;
@@ -31,10 +33,33 @@ typredef struct entity {
 entity_t LIST[40]; // with all of entities in the LIST
                     // we will be take access to the heap
 
+entity_t* new_entity(size_t size) {
+    if (LIST[0] == NULL && LIST[0].size == 0) {
+        static virtual_memory_t vm;
+        
+        LIST[0].ptr = vm.heap;
+        LIST[0].size = HEAP_SIZE;
+        
+        IN_USE++;
+    }
+    
+    entity_t* best = LIST;
+    
+    for(unsigned i = 0; i < IN_USE; i++) {
+        if (LIST[i].size >= size && LIST[i].size < best->size) {
+            best = &LIST[i];
+        }
+    }
+    
+    return best;
+}
+
 void* my_own_malloc(size_t size) {
     assert(size <= HEAP_SIZE); // max memory for object
                                 // what can give custom allocator
     size += HEADER;
+    
+    entity_t* newEntityVariable = new_entity(size);
 }
 
 void my_own_free(void* ptr) {
